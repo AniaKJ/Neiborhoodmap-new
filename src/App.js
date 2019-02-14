@@ -85,6 +85,8 @@ class App extends Component {
     ],
     query: '',
     isListHidden: true,//for universities list
+    isInfoWinVisible:false,
+    infoWinPosition:{},
   }
 
   //---function handling wiki getData
@@ -110,9 +112,12 @@ class App extends Component {
   updateUniversitiesList = (query)=>{
 
     //this will remove the name of the last cliked university as a result if there was any open info window, it will be hidden
-    this.setState({
-      clickeduniname: ''
-    });
+    // this.setState({
+    //   clickeduniname: '',
+    //   isInfoWinVisible: false,
+    // });
+
+    this.clearClicked();
 
     this.setState({
       query: query.trim()
@@ -127,7 +132,6 @@ class App extends Component {
   //--->functions for handling the click of the university name on the liste or of the marker
 
   handleClick = (e)=> {//'e' may be 'university.name' if the item is clicked on the list, 'e' may be a <div> if the item is clicked on the map (desktop) or <for mobile devices> 'e' may be an image with the parent <div> that we get on the desktop
-
 
     const clickedUniName = e;//clicked university name
     console.log(e);
@@ -145,37 +149,45 @@ class App extends Component {
       console.log(getData);
 
       // this.updateWiki(getData)
-      this.setState({
-      clickedWiki:getData,//dane wiki
-      });
+      // this.setState({
+      // clickedWiki:getData,//dane wiki
+      // });
       console.log('This is clickedwiki:'+this.state.clickedWiki);
 
-      // this.setState({
-      // clickeduniname: clickedUniName//nazwa uniwesytetu
-      // });
-      // console.log('This is clikeduni name:'+this.state.clickeduniname);
-
-
       let clickedUniFull = this.state.universities.filter((university)=> university.name === clickedUniName)
-      console.log(clickedUniFull);
+
+      let infoWinLat = clickedUniFull[0].location.lat
+      let infoWinLng = clickedUniFull[0].location.lng
+
+      let infoWinPosition = {"lat":infoWinLat,"lng":infoWinLng}
+
+      let clickedAddress = clickedUniFull[0].address
+
+
       this.setState({
-        clickedunifull: clickedUniFull,
+        infoWinPosition: infoWinPosition,
         clickeduniname: clickedUniName,
-        infoWindowVisibility:true
+        clickedunifull: clickedAddress,
+        isInfoWinVisible: true,
+        clickedWiki:getData,
       })
 
       console.log('This is clikeduni name:'+this.state.clickeduniname);
       console.log('This is clickedUniFull'+clickedUniFull[0].address);
-      console.log(this.state.clickedunifull);
+      console.log(this.state.isInfoWinVisible);
+      console.log(this.state.infoWinPosition);
     }
   }
 
   toggleList = () => {//shows ListUniversities when hamburger button clicked
 
     //this will remove the name of the last cliked university as a result if there was any open info window, it will be hidden
-    this.setState({
-      clickeduniname: ''
-    });
+    // this.setState({
+    //   clickeduniname: '',
+    //   isInfoWinVisible: false,
+    // });
+
+    this.clearClicked();
 
     //this will reset the list of the univerities displayed
     this.setState({
@@ -191,10 +203,10 @@ class App extends Component {
     });
   }
 
-  clearClicked = ()=>{
+  clearClicked = ()=>{//this will hide InfoWindow and stop marker bouncing
     this.setState({
-      // infoWindowVisibility: false,
       clickeduniname: '',
+      isInfoWinVisible: false,
     });
   }
 
@@ -218,7 +230,8 @@ class App extends Component {
             clickedUniFull={this.state.clickedunifull}
             clearClicked={this.clearClicked}
             wiki ={this.state.clickedWiki}
-            windowVisible={this.state.infoWindowVisibility}
+            windowVisible={this.state.isInfoWinVisible}
+            infoWinPosition = {this.state.infoWinPosition}
             />
           </div>
     )

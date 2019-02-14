@@ -14,12 +14,14 @@ export class MapContainer extends React.Component {
     showDetails: PropTypes.func.isRequired,
     clearClicked: PropTypes.func.isRequired,
     wiki: PropTypes.array.isRequired,
+    windowVisible: PropTypes.bool.isRequired,
+    infoWinPosition: PropTypes.object.isRequired,
   }
 
   state ={
     clickedunifull: '',//the clicked marker that will bounce
     activeMarker: {},
-    showingInfoWindow:true,
+    // showingInfoWindow:true,
   }
 
 
@@ -27,12 +29,15 @@ export class MapContainer extends React.Component {
     this.setState({//updates the state so that InfoWindow will be attached to this marker
     activeMarker: marker,
     })
-    this.showInfoWindow();//shows the InfoWindow
+    console.log('InfoWindow Position is:'+this.props.infoWinPosition);
+    console.log('Is windowvisibel?'+this.props.windowVisible);
+    console.log(this.props.clickedUniName);
+    // this.showInfoWindow();//shows the InfoWindow
   }
 
   //when map is clicked InfoWindow will be hidden and clearClicked() from App.js will be executed - there will be no clicked marker
   onMapClicked = ()=>{
-    this.hideInfoWindow();
+    // this.hideInfoWindow();
     this.props.clearClicked();
   }
 
@@ -51,8 +56,12 @@ export class MapContainer extends React.Component {
   }
 
   render() {
-    console.log(this.props.clikedUniFull);
-    console.log(this.props.clickedUniName!=='');
+    console.log('InfoWindow Position is:'+this.props.infoWinPosition);
+    console.log('InfoWindow Position is:'+this.props.infoWinPosition.lng);
+    console.log('Is windowvisibel?'+this.props.windowVisible);
+    console.log(this.props.clickedUniName);
+    console.log(this.props.clickedUniFull[0]);
+    // console.log(this.props.clickedUniFull[0].address);
 
     const { universities } = this.props;
     const { showinguniversities} = this.props;
@@ -100,28 +109,32 @@ export class MapContainer extends React.Component {
           animation={null}
           title={university.name}
           onClick={(props,marker,e)=>{this.props.showDetails(marker.title);this.updateClickedMarker(props,marker);}}
-          />
+          >
+          <InfoWindow visible={true}>
+          <div>hellow</div>
+          </InfoWindow>
+          </Marker>
           ))
         }
         {this.props.clickedUniName!==''&&
           <Marker
           key={this.props.clickedUniFull[0].id}
-          position={this.props.clickedUniFull[0].location}
+          position={this.props.infoWinPosition}
           animation={window.google.maps.Animation.BOUNCE}
           title={this.props.clickedUniFull[0].name}
           onClick={(props,marker)=>{this.props.showDetails(marker.title);this.updateClickedMarker(props,marker);}}
           />}
-        {this.props.clickedUniName!==''&&
           <InfoWindow
-          marker={this.state.activeMarker}
-          visible={this.state.showingInfoWindow}
+          position={this.props.infoWinPosition}
+          visible={this.props.windowVisible}
           onClose={this.props.clearClicked}>
             <div>
               <h3><strong>{this.props.clickedUniName}</strong></h3>
-              <p><strong>Address: </strong>{this.props.clickedUniFull[0].address}</p>
-              <p><strong>Summary from Wikiepedia: </strong>{this.props.wiki}</p>
+              <p>{this.props.clickedUniFull}</p>
+              <p><strong>Summary from Wikipedia: </strong>{this.props.wiki}</p>
             </div>
-        </InfoWindow>}
+        </InfoWindow
+        >
         </Map>
       </div>
     )

@@ -3,13 +3,13 @@ import PropTypes from 'prop-types';
 import {InfoWindow,Map, Marker, GoogleApiWrapper} from 'google-maps-react';
 // import Map from './Map';
 
-export class MapContainer extends React.Component {
+export class MapContainer extends Component {
 
   static propTypes = {
     universities: PropTypes.array.isRequired,
     showinguniversities: PropTypes.array.isRequired,
     clickedUniName: PropTypes.string.isRequired,
-    clickedUniFull: PropTypes.array.isRequired,
+    clickedUniFull: PropTypes.string.isRequired,
     query: PropTypes.string.isRequired,
     showDetails: PropTypes.func.isRequired,
     clearClicked: PropTypes.func.isRequired,
@@ -18,50 +18,7 @@ export class MapContainer extends React.Component {
     infoWinPosition: PropTypes.object.isRequired,
   }
 
-  state ={
-    clickedunifull: '',//the clicked marker that will bounce
-    activeMarker: {},
-    // showingInfoWindow:true,
-  }
-
-
-  updateClickedMarker = (props,marker)=>{//upadtes the clicked marker
-    this.setState({//updates the state so that InfoWindow will be attached to this marker
-    activeMarker: marker,
-    })
-    console.log('InfoWindow Position is:'+this.props.infoWinPosition);
-    console.log('Is windowvisibel?'+this.props.windowVisible);
-    console.log(this.props.clickedUniName);
-    // this.showInfoWindow();//shows the InfoWindow
-  }
-
-  //when map is clicked InfoWindow will be hidden and clearClicked() from App.js will be executed - there will be no clicked marker
-  onMapClicked = ()=>{
-    // this.hideInfoWindow();
-    this.props.clearClicked();
-  }
-
-  //hides InfoWindow
-  hideInfoWindow=()=>{
-    this.setState({
-    showingInfoWindow: false
-    });
-  }
-
-  //makes InfoWindow visible
-  showInfoWindow=()=>{
-    this.setState({
-    showingInfoWindow: true
-    });
-  }
-
   render() {
-    console.log('InfoWindow Position is:'+this.props.infoWinPosition);
-    console.log('InfoWindow Position is:'+this.props.infoWinPosition.lng);
-    console.log('Is windowvisibel?'+this.props.windowVisible);
-    console.log(this.props.clickedUniName);
-    console.log(this.props.clickedUniFull[0]);
-    // console.log(this.props.clickedUniFull[0].address);
 
     const { universities } = this.props;
     const { showinguniversities} = this.props;
@@ -83,9 +40,15 @@ export class MapContainer extends React.Component {
       }
     }
 
+    let bounds = new this.props.google.maps.LatLngBounds();
+    for (var i=0; i<universities.length; i++){
+      bounds.extend(universities[i].location);
+    }
+
     const style={
       width:'100vw',
-      height:'100vh'
+      height:'100vh',
+      margin: '30px 0 0 0'
     }
 
     if (!this.props.loaded) {
@@ -95,12 +58,12 @@ export class MapContainer extends React.Component {
       <div style={style}>
         <Map
         google={this.props.google}
-        zoom={13}
+        zoom={14}
         initialCenter={{
-            lat: 51.109961,
-            lng: 17.032725
+            lat:51.109950,
+            lng: 17.032691
         }}
-        onClick={()=>{this.onMapClicked();}}
+        onClick={()=>{this.props.clearClicked();}}
         >
         {shownuniversities.map((university) => (
           <Marker
@@ -108,13 +71,8 @@ export class MapContainer extends React.Component {
           position={university.location}
           animation={null}
           title={university.name}
-          onClick={(props,marker,e)=>{this.props.showDetails(marker.title);this.updateClickedMarker(props,marker);}}
-          >
-          <InfoWindow visible={true}>
-          <div>hellow</div>
-          </InfoWindow>
-          </Marker>
-          ))
+          onClick={(props,marker,e)=>{this.props.showDetails(marker.title)}}
+          />))
         }
         {this.props.clickedUniName!==''&&
           <Marker
@@ -122,7 +80,7 @@ export class MapContainer extends React.Component {
           position={this.props.infoWinPosition}
           animation={window.google.maps.Animation.BOUNCE}
           title={this.props.clickedUniFull[0].name}
-          onClick={(props,marker)=>{this.props.showDetails(marker.title);this.updateClickedMarker(props,marker);}}
+          onClick={(props,marker)=>{this.props.showDetails(marker.title)}}
           />}
           <InfoWindow
           position={this.props.infoWinPosition}
@@ -133,8 +91,7 @@ export class MapContainer extends React.Component {
               <p>{this.props.clickedUniFull}</p>
               <p><strong>Summary from Wikipedia: </strong>{this.props.wiki}</p>
             </div>
-        </InfoWindow
-        >
+        </InfoWindow>
         </Map>
       </div>
     )

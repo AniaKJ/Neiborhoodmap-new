@@ -15,8 +15,6 @@ class ListUniversities extends Component {
     const { universities } = this.props
     let { showinguniversities} =this.props
     let { query} =this.props
-    // const {updateUniversities}=this.props
-    // const {showDetails}=this.props
 
     let shownuniversities
 

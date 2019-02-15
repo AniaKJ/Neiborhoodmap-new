@@ -1,10 +1,6 @@
 import React, { Component } from 'react';
-// import { Route } from 'react-router-dom';
 import MapContainer from './Container';
 import ListUniversities from './ListUniversities';
-// import Map from './Map';
-// import Modal from './Modal';
-// import ModalOverlay from './ModalOverlay';
 import escapeRegExp from 'escape-string-regexp';
 import fetchJsonp from 'fetch-jsonp';
 
@@ -78,7 +74,7 @@ class App extends Component {
     data: [//data fetched from wiki
     ],
     clickeduniname: '',//stores name of the clicked item on the list or the marker
-    clickedunifull: [],//stores info about the university
+    clickedunifull: '',//stores info about the university
     clickedWiki: [//stores wiki info about the clicked item on the list
     ],
     showingUniversities: [//stores info about the filtered items
@@ -86,7 +82,7 @@ class App extends Component {
     query: '',
     isListHidden: true,//for universities list
     isInfoWinVisible:false,
-    infoWinPosition:{},
+    infoWinPosition:{"lat":0,"lng":0},
   }
 
   //---function handling wiki getData
@@ -111,12 +107,7 @@ class App extends Component {
   //---function for handling the filter
   updateUniversitiesList = (query)=>{
 
-    //this will remove the name of the last cliked university as a result if there was any open info window, it will be hidden
-    // this.setState({
-    //   clickeduniname: '',
-    //   isInfoWinVisible: false,
-    // });
-
+    //this will close open infowindow and stops marker bouncing
     this.clearClicked();
 
     this.setState({
@@ -131,10 +122,9 @@ class App extends Component {
 
   //--->functions for handling the click of the university name on the liste or of the marker
 
-  handleClick = (e)=> {//'e' may be 'university.name' if the item is clicked on the list, 'e' may be a <div> if the item is clicked on the map (desktop) or <for mobile devices> 'e' may be an image with the parent <div> that we get on the desktop
+  handleClick = (e)=> {
 
     const clickedUniName = e;//clicked university name
-    console.log(e);
 
     if (clickedUniName!==''){
       let getData = this.state.data.filter((single)=>clickedUniName === single[0][0]).map(item2=>//matches the clicke item with the data from wiki
@@ -145,14 +135,6 @@ class App extends Component {
         else
           return 'No Contents Have Been Found Try to Search Manually'
         })
-
-      console.log(getData);
-
-      // this.updateWiki(getData)
-      // this.setState({
-      // clickedWiki:getData,//dane wiki
-      // });
-      console.log('This is clickedwiki:'+this.state.clickedWiki);
 
       let clickedUniFull = this.state.universities.filter((university)=> university.name === clickedUniName)
 
@@ -171,34 +153,18 @@ class App extends Component {
         isInfoWinVisible: true,
         clickedWiki:getData,
       })
-
-      console.log('This is clikeduni name:'+this.state.clickeduniname);
-      console.log('This is clickedUniFull'+clickedUniFull[0].address);
-      console.log(this.state.isInfoWinVisible);
-      console.log(this.state.infoWinPosition);
     }
   }
 
   toggleList = () => {//shows ListUniversities when hamburger button clicked
 
-    //this will remove the name of the last cliked university as a result if there was any open info window, it will be hidden
-    // this.setState({
-    //   clickeduniname: '',
-    //   isInfoWinVisible: false,
-    // });
-
+    //this will close open infowindow and stops marker bouncing
     this.clearClicked();
 
     //this will reset the list of the univerities displayed
     this.setState({
-      showingUniversities: this.state.universities
-    });
-
-    this.setState({
-      query: ''
-    });
-
-    this.setState({
+      showingUniversities: this.state.universities,
+      query: '',
       isListHidden: !this.state.isListHidden
     });
   }

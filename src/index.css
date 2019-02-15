@@ -128,18 +128,14 @@ body, .app {
   }
 
   .list-universities {
-    font-size: 20px;
+    font-size: 18px;
     padding-top: 45px;
-  }
-
-  .universities-list-item {
-    font-size: 15px;
   }
 }
 
-@media screen and (min-width:970px){
+@media screen and (min-width:1330px){
   .list-universities {
-    width:30%;
+    width:20%;
     position:fixed;
   }
 }
